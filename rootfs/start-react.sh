@@ -10,11 +10,14 @@ fi
 
 if [ ! -z "$react_sock" ]; then
 	echo "$react_sock"
-	sed -i "s/{upstream}/${react_sock}/g" /etc/nginx/sites-available/default.conf
+        echo "$react_sock" > /tmp/default.conf
+        cat /etc/nginx/sites-available/default.conf >> /tmp/default.conf
+        mv /tmp/default.conf /etc/nginx/sites-available/default.conf
+	#sed -i "s/{upstream}/${react_sock}/g" /etc/nginx/sites-available/default.conf
 fi
 
 if [ ! -z "$REACT_WORKER_COUNT" ]; then
 	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
-		echo "Running" && REACT_WORKER_NUM=$i php ${APP_NAME} &
+		echo "Running worker #$i" && REACT_WORKER_NUM=$i php ${APP_NAME} &
 	done
 fi
