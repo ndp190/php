@@ -17,6 +17,6 @@ fi
 
 if [ ! -z "$REACT_WORKER_COUNT" ]; then
 	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
-		echo "Running worker #$i" && REACT_WORKER_NUM=$i php ${APP_NAME} &
+		echo "Running worker #$i" && REACT_WORKER_NUM=$i php ${APP_NAME}
 	done
 fi
