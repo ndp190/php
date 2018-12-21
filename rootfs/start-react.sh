@@ -15,12 +15,20 @@ if [ ! -z "$react_sock" ]; then
         mv /tmp/default.conf /etc/nginx/sites-available/default.conf
 fi
 
+
+echo "Start ReactPHP workers${NEWLINE}"
 if [ ! -z "$REACT_WORKER_COUNT" ]; then
 	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
 		echo "Running worker #$i" && REACT_WORKER_NUM=$i php ${APP_NAME} &
 	done
 fi
 
+if [ ! -z "$REACT_WORKER_COUNT" ]; then
+        sleep ${REACT_WORKER_COUNT} 
+	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
+            chown www-data ${REACT_WORKER_SOCK/\%s/${i}}
+	done
+fi
+
 echo "Run start.sh${NEWLINE}"
 /start.sh
-
