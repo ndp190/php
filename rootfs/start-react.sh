@@ -1,6 +1,8 @@
 #!/bin/bash
+
+NEWLINE=$'\n'
+
 if [ ! -z "$REACT_WORKER_COUNT" -a -z "$REACT_COMMAND_ONLY" ]; then
-	NEWLINE=$'\n'
 	react_sock="upstream reactor {${NEWLINE}"
 	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
 	    react_sock+="    server unix:${REACT_WORKER_SOCK/\%s/${i}} fail_timeout=10;${NEWLINE}"
@@ -9,7 +11,7 @@ if [ ! -z "$REACT_WORKER_COUNT" -a -z "$REACT_COMMAND_ONLY" ]; then
 
 	echo "$react_sock"
     echo "$react_sock" > /tmp/default.conf
-    cat /etc/nginx/sites-available/default.conf >> /tmp/default.conf
+    cat /etc/nginx/sites-available/default-react.conf >> /tmp/default.conf
     mv /tmp/default.conf /etc/nginx/sites-available/default.conf
 fi
 
