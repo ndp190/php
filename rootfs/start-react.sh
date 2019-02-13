@@ -15,17 +15,24 @@ if [ ! -z "$REACT_WORKER_COUNT" -a -z "$REACT_COMMAND_ONLY" ]; then
     mv /tmp/default.conf /etc/nginx/sites-available/default.conf
 fi
 
-
-echo "Start ReactPHP workers${NEWLINE}"
-if [ ! -z "$REACT_WORKER_COUNT" ]; then
-	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
-		echo "Running worker #$i" && REACT_WORKER_NUM=$i php ${APP_NAME} &
-	done
+if [ -f /etc/supervisord.conf ]; then
+	echo "Start supervisord${NEWLINE}"
+	supervisord
+	echo "Sleep for 5 seconds${NEWLINE}"
+	sleep 5
+else
+	echo "Start ReactPHP workers${NEWLINE}"
+	if [ ! -z "$REACT_WORKER_COUNT" ]; then
+		for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
+			echo "Running worker #$i" && REACT_WORKER_NUM=$i php ${APP_NAME} &
+		done
+	fi
 fi
 
 if [ ! -z "$REACT_WORKER_COUNT" -a -z "$REACT_COMMAND_ONLY" ]; then
-	sleep ${REACT_WORKER_COUNT} 
+	sleep ${REACT_WORKER_COUNT}
 	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
+		echo "Set permission to sock #${i}${NEWLINE}"
         chown www-data ${REACT_WORKER_SOCK/\%s/${i}}
 	done
 fi
