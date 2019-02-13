@@ -17,9 +17,7 @@ fi
 
 if [ -f /etc/supervisord.conf ]; then
 	echo "Start supervisord${NEWLINE}"
-	supervisord
-	echo "Sleep for 5 seconds${NEWLINE}"
-	sleep 5
+	supervisord &
 else
 	echo "Start ReactPHP workers${NEWLINE}"
 	if [ ! -z "$REACT_WORKER_COUNT" ]; then
@@ -30,7 +28,8 @@ else
 fi
 
 if [ ! -z "$REACT_WORKER_COUNT" -a -z "$REACT_COMMAND_ONLY" ]; then
-	sleep ${REACT_WORKER_COUNT}
+	# Wait for sock(s) to open
+	echo "Sleep for 5 second(s)" && sleep 5
 	for ((i=1; i<=$REACT_WORKER_COUNT; i++)); do
 		echo "Set permission to sock #${i}${NEWLINE}"
         chown www-data ${REACT_WORKER_SOCK/\%s/${i}}
